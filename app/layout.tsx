@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +30,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="flex h-screen">
+          {/* Sidebar */}
+          <aside className="w-64 bg-gray-800 text-white">
+            <nav className="p-4">{/* Sidebar items */}</nav>
+          </aside>
+
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col">
+            {/* Top bar */}
+            <header className="h-16 bg-gray-100 border-b">
+              {/* Top bar content */}
+            </header>
+
+            {/* Page content */}
+            <main className="flex-1 overflow-auto bg-gray-300">{children}</main>
+          </div>
+        </div>
       </body>
     </html>
   );
