@@ -6,6 +6,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Steps } from "primereact/steps";
 import { Dropdown } from "primereact/dropdown";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import AvatarInput from "@/components/avatar-input";
 import { useFormValidation } from "@/utils/utils";
@@ -27,6 +28,7 @@ const items = [
 
 export default function LeaguePage() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const router = useRouter();
   const { formValues, formErrors, handleChange, handleSubmit, handleBlur } =
     useFormValidation({
       name: {
@@ -68,9 +70,35 @@ export default function LeaguePage() {
     })(e);
   };
 
-  const submitSecondForm = (val) => {
-    console.log(formValues)
-    console.log(val);
+  const submitSecondForm = async (teamsData: any) => {
+    const leagueData = {
+      name: formValues.name,
+      description: formValues.description,
+      kind: formValues.kind,
+      imageUrl: formValues.imageUrl,
+      numberOfTeams: formValues.numberOfTeams,
+      numberOfRounds: formValues.numberOfRounds,
+      teams: teamsData.teams,
+    };
+
+    try {
+      const response = await fetch("/api/leagues", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(leagueData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create league");
+      }
+
+      const { id } = await response.json();
+      router.push(`/league/${id}`);
+    } catch (error) {
+      console.error("Error creating league:", error);
+    }
   };
 
   const firstStep = activeIndex === 0 && (
@@ -113,6 +141,7 @@ export default function LeaguePage() {
             options={kindList}
             invalid={!!formErrors.kind?.length}
             optionLabel="name"
+            optionValue="code"
             placeholder="Selecione o tipo"
             className="w-full md:w-14rem"
           />
