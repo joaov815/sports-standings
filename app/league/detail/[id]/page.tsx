@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface Team {
   name: string;
@@ -59,7 +59,9 @@ export default function LeagueDetailPage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4">{league.name}</h1>
-        {league.description && <p className="text-gray-600">{league.description}</p>}
+        {league.description && (
+          <p className="text-gray-600">{league.description}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-8">
@@ -80,7 +82,9 @@ export default function LeagueDetailPage() {
           {league.teams.map((team, index) => (
             <div key={index} className="border p-4 rounded">
               <h3 className="text-xl font-semibold">{team.name}</h3>
-              {team.description && <p className="text-gray-600 mt-2">{team.description}</p>}
+              {team.description && (
+                <p className="text-gray-600 mt-2">{team.description}</p>
+              )}
             </div>
           ))}
         </div>
