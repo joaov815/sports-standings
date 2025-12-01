@@ -4,18 +4,28 @@ import Image from "next/image";
 
 import { useRef, useState } from "react";
 
-export default function ImageUpload() {
+export default function AvatarInput({
+  size = 150,
+  value,
+  onChange,
+}: {
+  size?: number;
+  value?: string | null;
+  onChange?: (file: File | undefined) => void;
+}) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    value ?? null
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
+      onChange?.(file);
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = (event) =>
         setImagePreview(event.target?.result as string);
-      };
       reader.readAsDataURL(file);
     }
   };
@@ -32,16 +42,16 @@ export default function ImageUpload() {
       />
 
       <div
-        className="w-[150px] h-[150px] rounded-full overflow-hidden cursor-pointer hover:opacity-70 border-2"
+        style={{ height: size + "px", width: size + "px" }}
+        className="rounded-full overflow-hidden cursor-pointer hover:opacity-70 border-2 relative"
         onClick={() => fileInputRef.current?.click()}
       >
         {imagePreview ? (
           <Image
             src={imagePreview}
             alt="Preview"
-            width={150}
-            height={150}
-            className="object-cover"
+            fill
+            className="object-cover rounded-full"
             unoptimized
           />
         ) : (
