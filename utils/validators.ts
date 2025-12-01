@@ -7,10 +7,10 @@ export class Validators {
       errorMessage,
     });
   }
-  
+
   static evenNumber(errorMessage = "Deve ser par"): Validator {
     return (v: number) => ({
-      isValid: v % 2 === 0,
+      isValid: typeof v === "number" ? v % 2 === 0 : true,
       errorMessage,
     });
   }
@@ -19,8 +19,8 @@ export class Validators {
     val: number,
     errorMessage = "Número de caracteres inválido"
   ): Validator {
-    return (v: string) => ({
-      isValid: v.length >= val,
+    return (v: unknown) => ({
+      isValid: typeof v === "string" ? v.length >= val : true,
       errorMessage,
     });
   }
@@ -30,8 +30,8 @@ export class Validators {
     max: number,
     errorMessage = "Valor inválido"
   ): Validator {
-    return (v: number) => ({
-      isValid: v >= min && v <= max,
+    return (v: unknown) => ({
+      isValid: typeof v === "number" ? v >= min && v <= max : true,
       errorMessage,
     });
   }
