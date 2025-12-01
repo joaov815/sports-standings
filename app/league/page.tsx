@@ -11,6 +11,19 @@ import { useState } from "react";
 import AvatarInput from "@/components/avatar-input";
 import { range, useFormValidation } from "@/utils/utils";
 import FormErrorText from "@/components/form-error-text";
+import { Validators } from "@/utils/validators";
+import { Form } from "@/components/form";
+
+const kindList = [{ name: "Pontos corridos", code: "P" }];
+
+const items = [
+  {
+    label: "Dados da Liga",
+  },
+  {
+    label: "Participantes",
+  },
+];
 
 export default function LeaguePage() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -18,33 +31,29 @@ export default function LeaguePage() {
     useFormValidation({
       name: {
         value: "",
-        validators: [
-          (v) => {
-            return {
-              isValid: v.length > 2,
-              errorMessage: "Número de caracteres inválido",
-            };
-          },
-        ],
+        validators: [Validators.required(), Validators.minLength(2)],
       },
       description: { value: "" },
-      kind: { value: "" },
+      kind: {
+        value: "",
+        validators: [Validators.required()],
+      },
       imageUrl: { value: "" },
-      numberOfTeams: { value: null },
-      numberOfRounds: { value: null },
-      teams: { value: [] },
+      numberOfTeams: {
+        value: null,
+        validators: [
+          Validators.required(),
+          Validators.evenNumber("Número de times deve ser par"),
+        ],
+      },
+      numberOfRounds: {
+        value: null,
+        validators: [
+          Validators.required(),
+          Validators.between(1, 4, "Número de rodadas inválido"),
+        ],
+      },
     });
-
-  const kindList = [{ name: "Pontos corridos", code: "P" }];
-
-  const items = [
-    {
-      label: "Dados da Liga",
-    },
-    {
-      label: "Participantes",
-    },
-  ];
 
   function uploadImage(file: File | undefined) {
     if (!file) return;
@@ -67,47 +76,48 @@ export default function LeaguePage() {
     // submit
   }
 
-  console.log(!!formErrors.name);
-
   const participantsTemplate = formValues.numberOfTeams ? (
-    range(formValues.numberOfTeams).map((v) => {
-      return (
-        <div className="flex gap-x-4 mt-20" key={v}>
-          <div className="flex justify-center items-center shrink-0">
-            <AvatarInput size={140} onChange={(file) => uploadImage(file)} />
+    <Form className="space-y-4" onSubmit={submit}>
+      {range(formValues.numberOfTeams).map((v) => {
+        return (
+          <div className="flex gap-x-4 mt-20" key={v}>
+            <div className="flex justify-center items-center shrink-0">
+              <AvatarInput size={140} onChange={(file) => uploadImage(file)} />
+            </div>
+            <div className="flex flex-col gap-2 justify-center grow">
+              <InputText
+                placeholder="Nome"
+                invalid={!!formErrors.name}
+                onBlur={() => handleBlur("name")}
+                className="w-full"
+                value={formValues.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+              />
+              <InputTextarea
+                placeholder="Descrição"
+                className="w-full"
+                invalid={!!formErrors.description}
+                value={formValues.description}
+                onChange={(e) => handleChange("description", e.target.value)}
+                rows={4}
+              />
+            </div>
           </div>
-          <div className="flex flex-col gap-2 justify-center grow">
-            <InputText
-              placeholder="Nome"
-              invalid={!!formErrors.name}
-              onBlur={() => handleBlur("name")}
-              className="w-full"
-              value={formValues.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-            />
-            <InputTextarea
-              placeholder="Descrição"
-              className="w-full"
-              invalid={!!formErrors.description}
-              value={formValues.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              rows={4}
-            />
-          </div>
-        </div>
-      );
-    })
+        );
+      })}
+    </Form>
   ) : (
     <></>
   );
 
   const firstStep =
     activeIndex === 0 ? (
-      <>
+      <Form className="space-y-4" onSubmit={submit}>
         <div className="grid grid-cols-4 gap-4 mt-10">
           <div className="flex justify-center">
             <AvatarInput onChange={(file) => uploadImage(file)} />
           </div>
+
           <div className="flex flex-col justify-center col-span-3">
             <InputText
               placeholder="Nome"
@@ -124,11 +134,11 @@ export default function LeaguePage() {
             placeholder="Descrição"
             className="w-full"
             value={formValues.description}
-            invalid={!!formErrors.name?.length}
+            invalid={!!formErrors.description?.length}
             onChange={(e) => handleChange("description", e.target.value)}
             rows={5}
           />
-          <FormErrorText errors={formErrors.name} />
+          <FormErrorText errors={formErrors.description} />
         </div>
 
         <div className="grid grid-cols-3 gap-x-2">
@@ -137,42 +147,44 @@ export default function LeaguePage() {
               value={formValues.kind}
               onChange={(e) => handleChange("kind", e.value)}
               options={kindList}
-              invalid={!!formErrors.name?.length}
+              invalid={!!formErrors.kind?.length}
               optionLabel="name"
               placeholder="Selecione o tipo"
               className="w-full md:w-14rem"
             />
-            <FormErrorText errors={formErrors.name} />
+            <FormErrorText errors={formErrors.kind} />
           </div>
 
-          <div>
+          <div className="w-full">
             <InputNumber
               placeholder="N. times"
               showButtons
               name="numberOfTeams"
-              invalid={!!formErrors.name?.length}
+              invalid={!!formErrors.numberOfTeams?.length}
               min={0}
               max={30}
               value={formValues.numberOfTeams}
               onChange={(e) => handleChange("numberOfTeams", e.value)}
+              className="w-full"
             />
-            <FormErrorText errors={formErrors.name} />
+            <FormErrorText errors={formErrors.numberOfTeams} />
           </div>
 
-          <div>
+          <div className="w-full">
             <InputNumber
               placeholder="N. turnos"
               showButtons
               min={0}
               max={4}
-              invalid={!!formErrors.name?.length}
+              invalid={!!formErrors.numberOfRounds?.length}
               value={formValues.numberOfRounds}
               onChange={(e) => handleChange("numberOfRounds", e.value)}
+              className="w-full"
             />
-            <FormErrorText errors={formErrors.name} />
+            <FormErrorText errors={formErrors.numberOfRounds} />
           </div>
         </div>
-      </>
+      </Form>
     ) : null;
 
   const secondStep = activeIndex === 1 ? participantsTemplate : null;
@@ -187,14 +199,8 @@ export default function LeaguePage() {
       />
 
       <div className="border-2 mt-10 px-5 rounded-lg h-full overflow-y-auto">
-        <form action="none" className="space-y-4">
-          {firstStep}
-          {secondStep}
-
-          <div className="flex flex-row-reverse mt-10 py-2">
-            <Button label="Próximo passo" type="button" onClick={submit} />
-          </div>
-        </form>
+        {firstStep}
+        {secondStep}
       </div>
     </div>
   );

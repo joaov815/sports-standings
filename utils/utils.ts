@@ -8,7 +8,7 @@ export function range(length: number): number[] {
   return result;
 }
 
-type Validator = (value: any) => {
+export type Validator = (value: any) => {
   isValid: boolean;
   errorMessage: string;
 };
