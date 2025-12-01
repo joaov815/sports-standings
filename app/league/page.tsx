@@ -187,7 +187,7 @@ export default function LeaguePage() {
   );
 
   return (
-    <div className="p-8 flex flex-col h-full">
+    <div className="p-8 flex flex-col h-full bg-white">
       <Steps
         model={items}
         activeIndex={activeIndex}

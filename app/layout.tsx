@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import 'primereact/resources/themes/lara-light-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
+import "primereact/resources/themes/lara-light-blue/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,6 +25,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const sidebarItems = [{ name: "Ligas", route: "/league" }];
+
   return (
     <html lang="en">
       <body
@@ -33,7 +35,13 @@ export default function RootLayout({
         <div className="flex h-screen">
           {/* Sidebar */}
           <aside className="w-64 bg-gray-800 text-white">
-            <nav className="p-4">{/* Sidebar items */}</nav>
+            <nav className="p-4">
+              <ul>
+                {sidebarItems.map((item, idx) => (
+                  <li key={idx} className="p-4 border rounded-md hover:bg-white hover:text-gray-800 cursor-pointer"><a href={item.route}>{item.name}</a></li>
+                ))}
+              </ul>
+            </nav>
           </aside>
 
           {/* Main content area */}
